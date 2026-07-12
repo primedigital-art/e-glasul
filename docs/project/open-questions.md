@@ -4,13 +4,13 @@ Acest registru păstrează întrebările care afectează mai multe funcționalit
 
 | ID | Întrebare | Categorie | Owner | Status | Decizie / referință |
 |---|---|---|---|---|---|
-| OQ-001 | Care este stack-ul tehnic aprobat pentru Phase 1? | Architecture | eg-solution-architect | Resolved | [ADR-0001](../decisions/ADR-0001-phase-1-technology-and-deployment-baseline.md) — baseline tehnologic și de deployment (status `Proposed`) |
+| OQ-001 | Care este stack-ul tehnic aprobat pentru Phase 1? | Architecture | eg-solution-architect | Resolved | [ADR-0001](../decisions/ADR-0001-phase-1-technology-and-deployment-baseline.md) — baseline tehnologic și de deployment |
 | OQ-002 | Ce nivel de white-label are fiecare tenant și cum se rezolvă tenantul? | Architecture | Solution architect | Resolved | [Decizie OQ-002 — subdomeniu per primărie, o singură aplicație](#decizie-oq-002--subdomeniu-per-primărie-o-singură-aplicație). Modelul complet se specifică în FUP-1. |
 | OQ-003 | Ce reguli de registratură trebuie să suporte prima primărie pilot? | Domain | Municipality representative | Open | Domain validation |
 
 ## Decizie OQ-002 — subdomeniu per primărie, o singură aplicație
 
-**Data:** 2026-07-12 · **Owner:** Product owner · **Status:** Resolved
+**Data:** 2026-07-12 — statusul și owner-ul întrebării sunt în rândul OQ-002 din tabelul de mai sus.
 
 ### Ce s-a decis
 
@@ -37,7 +37,7 @@ Subdomeniul este **context de prezentare**, nu autorizare. Cele două se separă
 
 Un utilizator al tenantului A care navighează la subdomeniul tenantului B poate vedea brandingul lui B, dar **nu poate citi, scrie sau lista niciun rând al lui B**. Izolarea nu depinde de gazdă, de rutare, de UI sau de configurarea Netlify — depinde de RLS.
 
-Aceasta este măsura directă împotriva **R-002 (izolare multi-tenant incompletă, impact Critical)** și se validează prin **V1** (suită de teste cross-tenant) din [ADR-0001](../decisions/ADR-0001-phase-1-technology-and-deployment-baseline.md).
+Aceasta este măsura directă împotriva riscului **[R-002 — izolare multi-tenant incompletă](./risk-register.md)** și se validează prin **V1** (suită de teste cross-tenant) din [ADR-0001](../decisions/ADR-0001-phase-1-technology-and-deployment-baseline.md).
 
 ### Ce NU este rezolvat aici
 
