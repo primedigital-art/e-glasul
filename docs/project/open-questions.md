@@ -5,7 +5,7 @@ Acest registru păstrează întrebările care afectează mai multe funcționalit
 | ID | Întrebare | Categorie | Owner | Status | Decizie / referință |
 |---|---|---|---|---|---|
 | OQ-001 | Care este stack-ul tehnic aprobat pentru Phase 1? | Architecture | eg-solution-architect | Resolved | [ADR-0001](../decisions/ADR-0001-phase-1-technology-and-deployment-baseline.md) — baseline tehnologic și de deployment (status `Proposed`) |
-| OQ-002 | Care este modelul comercial și nivelul de white-label pentru fiecare tenant? | Product | Product owner | Resolved | [Decizie OQ-002 — subdomeniu per primărie, o singură aplicație](#decizie-oq-002--subdomeniu-per-primărie-o-singură-aplicație). Modelul complet se specifică în FUP-1. |
+| OQ-002 | Ce nivel de white-label are fiecare tenant și cum se rezolvă tenantul? | Architecture | Solution architect | Resolved | [Decizie OQ-002 — subdomeniu per primărie, o singură aplicație](#decizie-oq-002--subdomeniu-per-primărie-o-singură-aplicație). Modelul complet se specifică în FUP-1. |
 | OQ-003 | Ce reguli de registratură trebuie să suporte prima primărie pilot? | Domain | Municipality representative | Open | Domain validation |
 
 ## Decizie OQ-002 — subdomeniu per primărie, o singură aplicație
@@ -43,4 +43,4 @@ Aceasta este măsura directă împotriva **R-002 (izolare multi-tenant incomplet
 
 Această decizie fixează **modelul de tenancy și rezolvarea tenantului**. Modelul complet — schema tabelului `tenants`, forma exactă a claim-ului din JWT și cum ajunge acolo, politicile RLS concrete, comportamentul pentru utilizatorii neautentificați pe site-ul public, gestionarea DNS și a certificatelor wildcard, procedura operațională de onboarding — **se specifică în FUP-1 (ADR: model de tenancy și rezolvarea tenantului)**, care nu este creat de această decizie.
 
-**Termenii comerciali** propriu-ziși (preț, pachete, contractare) nu fac obiectul acestei decizii tehnice și rămân în sarcina Product owner.
+**Termenii comerciali** (preț, pachete, contractare) se gestionează **în afara acestui repository** și nu constituie o întrebare deschisă de arhitectură. Din acest motiv, OQ-002 este formulată strict ca întrebare de white-label și de rezolvare a tenantului.
