@@ -1,7 +1,7 @@
 # ADR-0001: Baseline tehnologic și de deployment pentru Phase 1
 
-- **Status:** Proposed
-- **Data:** 2026-07-11
+- **Status:** Accepted
+- **Data:** 2026-07-12
 - **Decidenți:** Product owner, Solution architect
 - **Înlocuiește:** None
 - **Înlocuit de:** None
@@ -183,7 +183,7 @@ Adoptăm **Opțiunea A**, cu următoarele elemente fixate ca decise:
 
 15. **GitHub Pull Requests + verificări CI automate obligatorii înainte de merge în `main`.**
 
-Această decizie **închide OQ-001**. Actualizarea `docs/project/open-questions.md` este o acțiune ulterioară (vezi „Acțiuni ulterioare"); acest ADR nu modifică acel fișier.
+Această decizie **închide OQ-001**. Registrul `docs/project/open-questions.md` a fost actualizat corespunzător — OQ-001 are status `Resolved`, cu referință la acest ADR — printr-un commit separat, pe aceeași ramură.
 
 ## Motivație
 
@@ -381,10 +381,10 @@ Indicatorii dashboard-ului de conducere se calculează **exclusiv din istoricul 
 
 Acest ADR nu fixează formulele — le fixează **sursa de adevăr** și interdicția de manipulare. Formulele sunt conținutul FUP-9.
 
-**Acțiuni de întreținere a documentației (NU sunt executate de acest ADR):**
+**Acțiuni de întreținere a documentației (EXECUTATE, prin commit-uri separate pe aceeași ramură):**
 
-- **Actualizarea `docs/project/open-questions.md`**: OQ-001 („Care este stack-ul tehnic aprobat pentru Phase 1?") trece în `Resolved`, cu referință `ADR-0001`. **Acest ADR nu modifică acel fișier** — actualizarea este o acțiune ulterioară, de făcut după acceptarea ADR-ului. Owner: Solution architect.
-- **Actualizarea `docs/project/risk-register.md`**: R-002 primește ca măsură explicită „politici RLS + V1 (teste cross-tenant) + V2 (scanare de secrete în bundle) ca porți de CI blocante". Rămâne `Open` până la FUP-1 și la V1/V2 verzi. Owner: Architecture/Security.
+- **`docs/project/open-questions.md` — actualizat.** OQ-001 („Care este stack-ul tehnic aprobat pentru Phase 1?") are status `Resolved`, cu referință la acest ADR. Owner: Solution architect.
+- **`docs/project/risk-register.md` — actualizat.** R-002 are ca măsură explicită „politici RLS + V1 (teste cross-tenant) + V2 (scanare de secrete în bundle) ca porți de CI blocante". Riscul **rămâne `Open`** până la FUP-1 și până când V1/V2 sunt verzi pe schema reală. Owner: Architecture/Security.
 
 **Întrebări deschise care NU sunt rezolvate de acest ADR (nu le ascundem aici):**
 
@@ -399,5 +399,5 @@ Acest ADR nu fixează formulele — le fixează **sursa de adevăr** și interdi
 - `.claude/rules/architecture.md` — granițe de modul, multi-tenancy, stări de workflow, cerințe pentru specificații.
 - `.claude/rules/security.md` — deny by default, autorizare server-side, izolarea tenantului ca frontieră de securitate, interdicția expunerii credențialelor privilegiate, reguli de upload, audit trail, privacy by design, interdicția inventării perioadelor de retenție.
 - `.claude/rules/product-scope.md` — clasificarea funcționalităților pe faze; standardul de simplitate; interdicția afirmațiilor vagi fără măsurare.
-- `docs/project/open-questions.md` — **OQ-001** (închisă de acest ADR, cu actualizarea fișierului ca acțiune ulterioară), OQ-002, OQ-003.
-- `docs/project/risk-register.md` — **R-002** (izolare multi-tenant incompletă, impact Critical), R-001, R-003, R-004.
+- `docs/project/open-questions.md` — **OQ-001** (închisă de acest ADR; registrul este deja actualizat, status `Resolved`), OQ-002, OQ-003.
+- `docs/project/risk-register.md` — **R-002** (izolare multi-tenant incompletă, impact Critical; registrul este deja actualizat cu măsura RLS + V1 + V2, iar riscul rămâne `Open`), R-001, R-003, R-004.
