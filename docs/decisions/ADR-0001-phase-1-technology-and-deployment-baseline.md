@@ -1,7 +1,7 @@
 # ADR-0001: Baseline tehnologic și de deployment pentru Phase 1
 
-- **Status:** Proposed
-- **Data:** 2026-07-11
+- **Status:** Accepted
+- **Data:** 2026-07-12
 - **Decidenți:** Product owner, Solution architect
 - **Înlocuiește:** None
 - **Înlocuit de:** None
@@ -183,7 +183,7 @@ Adoptăm **Opțiunea A**, cu următoarele elemente fixate ca decise:
 
 15. **GitHub Pull Requests + verificări CI automate obligatorii înainte de merge în `main`.**
 
-Această decizie **închide OQ-001**. Actualizarea `docs/project/open-questions.md` este o acțiune ulterioară (vezi „Acțiuni ulterioare"); acest ADR nu modifică acel fișier.
+Această decizie **închide OQ-001**. Registrul `docs/project/open-questions.md` a fost actualizat corespunzător — OQ-001 are status `Resolved`, cu referință la acest ADR — printr-un commit separat, pe aceeași ramură.
 
 ## Motivație
 
