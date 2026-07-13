@@ -1,6 +1,6 @@
 # ADR-0003: Model de autentificare și de roluri
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Data:** 2026-07-13
 - **Decidenți:** Product owner, Solution architect
 - **Înlocuiește:** None
@@ -794,12 +794,12 @@ Citirea acestei matrici, pe verticală:
 | FUP-10 | **Acces de suport bazat pe consimțământ** (din ADR-0002) — rămâne **separat** și **nu** se rezolvă prin adăugarea unui rol în `app_role` | **Acest ADR nu creează un rol de suport.** C13 împiedică adăugarea lui tăcută. |
 | FUP-12 | **Ciclul de viață al tenantului** (din ADR-0002) — trebuie extins: ce se întâmplă cu conturile și rolurile la suspendarea unui tenant | `is_active` pe utilizator există; suspendarea unui **tenant** întreg nu este definită. |
 
-**Actualizări de registru — necesare, prin commit-uri separate** (acest ADR **nu** le execută):
+**Unde se ține evidența** (registrele sunt proprietarii; acest ADR le referă, nu le repetă):
 
-- [`docs/project/open-questions.md`](../project/open-questions.md) — înregistrarea întrebărilor deschise de mai jos, cu owner și status.
-- [`docs/project/risk-register.md`](../project/risk-register.md) — R-002 este adresat de ADR-0002; acest ADR adaugă C8–C13 și T19–T45 la setul de porți. Riscul nou de mai jos (ambiguitatea de audit + fereastra de revocare) trebuie înregistrat ca risc distinct, **nu topit în R-002**.
+- [`docs/project/open-questions.md`](../project/open-questions.md) — întrebările deschise de mai jos, cu owner și status.
+- [`docs/project/risk-register.md`](../project/risk-register.md) — R-002 este adresat de ADR-0002; acest ADR adaugă **C8–C13** și **T19–T45** la setul de porți. Riscul nou de mai jos (ambiguitatea de audit + fereastra de revocare) se înregistrează ca risc **distinct**, **nu topit în R-002**.
 
-**Întrebări deschise, care NU sunt ascunse în acest ADR:**
+**Întrebări deschise, care NU sunt ascunse în acest ADR** (enunțate aici, urmărite în [registru](../project/open-questions.md)):
 
 - **Se blochează tehnic auto-procesarea?** Un funcționar care își procesează propria sesizare este **înregistrat**, dar **nu este împiedicat** (consecința negativă 1). Blocarea (`actor_user_id <> author_user_id` la schimbarea de status) este o **decizie de produs**, nu una tehnică. **Nu o presupunem.** Owner: Product owner + reprezentantul primăriei.
 - **Cât durează access token-ul?** Determină direct fereastra de la T42. Nu o alegem aici. Owner: Solution architect (FUP-15).
