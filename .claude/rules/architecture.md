@@ -43,3 +43,9 @@ A technical specification must identify:
 - test strategy
 
 Do not create implementation code from an incomplete specification unless the user explicitly requests an exploratory prototype.
+
+## Documentation records
+
+Registers and documents link to facts. They never restate them.
+
+A field that lives in one document — status, owner, severity, date, decision — must not be copied into another. Reference the document that owns it. A copied fact is correct only until the source changes, and it then rots silently.
