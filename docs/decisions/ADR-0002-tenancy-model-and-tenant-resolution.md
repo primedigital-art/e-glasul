@@ -1,6 +1,6 @@
 # ADR-0002: Model de multi-tenancy și strategia de rezolvare a tenantului
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Data:** 2026-07-13
 - **Decidenți:** Product owner, Solution architect
 - **Înlocuiește:** None
@@ -602,12 +602,12 @@ Toate verificările produc un rezultat observabil. Cele blocante opresc merge-ul
 | **FUP-12** (nou) | **Ciclul de viață al tenantului** — suspendare (ce se întâmplă cu utilizatorii și datele), ștergere, export complet la încetarea contractului, **procedura de restaurare selectivă a unui singur tenant** (inexistentă azi — vezi „Consecințe negative", punctul 3) | Consecință directă a alegerii Opțiunii A. Fără el, nu putem promite unei primării nici ștergerea, nici recuperarea datelor ei. |
 | **FUP-13** (nou) | **Punctul de aplicare a rate limiting-ului** — unde se aplică efectiv limita per tenant (CDN/edge, Supabase, funcție server), cum se identifică tenantul înainte de autentificare, ce se face la depășire | Decizia 16 cere rate limiting per tenant, dar mecanismul nu este ales. Blochează P3 și expunerea publică a înregistrării. |
 
-**Actualizări de registru necesare** (a se face prin commit-uri separate, nu de acest ADR):
+**Actualizări de registru — EFECTUATE**, prin commit-uri separate:
 
-- `docs/project/risk-register.md` — R-002 primește ca măsură suplimentară C1–C7 și T1–T18 din acest ADR; rămâne `Open` până când sunt verzi pe schema reală.
-- `docs/project/open-questions.md` — se adaugă întrebările deschise de mai jos.
+- [`docs/project/risk-register.md`](../project/risk-register.md) — R-002 are ca măsuri C1–C7 și T1–T18 din acest ADR. Riscul **rămâne `Open`** până când sunt verzi pe o schemă reală.
+- [`docs/project/open-questions.md`](../project/open-questions.md) — întrebările deschise de mai jos sunt înregistrate acolo, cu owner și status.
 
-**Întrebări deschise, care NU sunt ascunse în acest ADR:**
+**Întrebări deschise, care NU sunt ascunse în acest ADR** (evidența lor se ține în [registrul de întrebări deschise](../project/open-questions.md); mai jos sunt enunțate, nu urmărite):
 
 - **Perioadele de retenție** a datelor personale, a documentelor încărcate și a log-urilor. **Nestabilite. Nu le inventăm.** Owner: Product owner + specialist privacy/juridic.
 - **Furnizorul de SMS** și costul unitar real. Owner: Product owner + Solution architect (FUP-4).
