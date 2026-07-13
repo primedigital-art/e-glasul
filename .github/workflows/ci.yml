@@ -32,3 +32,40 @@ jobs:
 
       - name: Build both apps
         run: pnpm --recursive build
+
+  # Porțile de izolare. Acestea sunt cele care apără R-002.
+  #
+  # Rulează pe un stack Supabase LOCAL, proaspăt, cu migrațiile rejucate de la
+  # zero. Testele de izolare folosesc EXCLUSIV cheia anon: `service_role` are
+  # BYPASSRLS și ar face suita să treacă degeaba.
+  isolation:
+    name: RLS gates (C* + T*)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # CLI-ul vine din lockfile, nu din instalare globală.
+      - name: Start local Supabase
+        run: pnpm exec supabase start
+
+      # Migration replay de la zero (V3 din ADR-0001).
+      - name: Replay migrations from zero
+        run: pnpm exec supabase db reset
+
+      - name: Structural gates (C1, C2, C3, C4, C6, C10, C11, C12, C13)
+        run: pnpm --filter @e-glasul/db-tests test
+
+      - name: Stop local Supabase
+        if: always()
+        run: pnpm exec supabase stop
