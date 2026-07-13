@@ -7,6 +7,7 @@ Acest registru păstrează întrebările care afectează mai multe funcționalit
 | OQ-001 | Care este stack-ul tehnic aprobat pentru Phase 1? | Architecture | eg-solution-architect | Resolved | [ADR-0001](../decisions/ADR-0001-phase-1-technology-and-deployment-baseline.md) — baseline tehnologic și de deployment |
 | OQ-002 | Ce nivel de white-label are fiecare tenant și cum se rezolvă tenantul? | Architecture | Solution architect | Resolved | [Decizie OQ-002 — subdomeniu per primărie, o singură aplicație](#decizie-oq-002--subdomeniu-per-primărie-o-singură-aplicație). Modelul complet se specifică în FUP-1. |
 | OQ-003 | Ce reguli de registratură trebuie să suporte prima primărie pilot? | Domain | Municipality representative | Open | Domain validation |
+| OQ-004 | Cum ajunge conținutul public dinamic (anunțurile) pe site-ul static? | Architecture | Solution architect | Resolved | [Decizie OQ-004 — anunțurile se încarcă la runtime, nu la build](#decizie-oq-004--anunțurile-se-încarcă-la-runtime-nu-la-build). Mecanismul complet se specifică în FUP-8. |
 
 ## Decizie OQ-002 — subdomeniu per primărie, o singură aplicație
 
@@ -44,3 +45,31 @@ Aceasta este măsura directă împotriva riscului **[R-002 — izolare multi-ten
 Această decizie fixează **modelul de tenancy și rezolvarea tenantului**. Modelul complet — schema tabelului `tenants`, forma exactă a claim-ului din JWT și cum ajunge acolo, politicile RLS concrete, comportamentul pentru utilizatorii neautentificați pe site-ul public, gestionarea DNS și a certificatelor wildcard, procedura operațională de onboarding — **se specifică în FUP-1 (ADR: model de tenancy și rezolvarea tenantului)**, care nu este creat de această decizie.
 
 **Termenii comerciali** (preț, pachete, contractare) se gestionează **în afara acestui repository** și nu constituie o întrebare deschisă de arhitectură. Din acest motiv, OQ-002 este formulată strict ca întrebare de white-label și de rezolvare a tenantului.
+
+## Decizie OQ-004 — anunțurile se încarcă la runtime, nu la build
+
+**Data:** 2026-07-13 — statusul și owner-ul întrebării sunt în rândul OQ-004 din tabelul de mai sus.
+
+### Ce s-a decis
+
+1. **Anunțurile NU sunt generate static** în site-ul public Astro.
+
+2. **Site-ul public se construiește static o singură dată și se servește din CDN.** Anunțurile se citesc **la runtime, în browser**, direct din Supabase, folosind **cheia anon** și o **politică RLS de citire publică, delimitată pe tenant**.
+
+3. **Publicarea unui anunț NU necesită rebuild și NU necesită deployment.** Este o **scriere în baza de date**, făcută de personalul primăriei din panoul de administrare.
+
+4. **Adăugarea unei primării NU necesită rebuild.** Un singur build Astro servește toți tenanții: tenantul se rezolvă din hostname, iar datele lui de prezentare se citesc din tabelul `tenants`.
+
+### Consecința acceptată deliberat
+
+**Anunțurile NU sunt indexate de motoarele de căutare.** Fiind încărcate în browser după livrarea HTML-ului static, ele nu există în pagina pe care o vede un crawler.
+
+Cetățenii ajung la anunțuri **vizitând direct site-ul** sau **prin notificare push** — **nu prin Google**. Acesta este un compromis asumat, nu o scăpare: costul lui este vizibilitatea în căutare, iar câștigul este că o primărie poate publica un anunț în câteva secunde, fără build, fără deployment și fără intervenția echipei tehnice.
+
+Dacă indexarea anunțurilor devine o cerință, decizia se reevaluează explicit — nu se rezolvă prin soluții parțiale.
+
+### Ce NU este rezolvat aici
+
+Mecanismul complet — forma politicii RLS de citire publică, schema tabelului de anunțuri, comportamentul de cache și revalidare în browser, starea de încărcare și de eroare la citirea anunțurilor, programarea publicării, comportamentul când Supabase nu răspunde — **se specifică în FUP-8**, care nu este creat de această decizie.
+
+Politica de citire publică atinge direct izolarea între tenanți: este singurul loc din Phase 1 unde date se citesc **fără JWT**. Delimitarea pe tenant a acestei politici trebuie tratată în FUP-8 ca subiect de securitate, nu ca detaliu de implementare.
