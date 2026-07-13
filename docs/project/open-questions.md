@@ -5,9 +5,17 @@ Acest registru păstrează întrebările care afectează mai multe funcționalit
 | ID | Întrebare | Categorie | Owner | Status | Decizie / referință |
 |---|---|---|---|---|---|
 | OQ-001 | Care este stack-ul tehnic aprobat pentru Phase 1? | Architecture | eg-solution-architect | Resolved | [ADR-0001](../decisions/ADR-0001-phase-1-technology-and-deployment-baseline.md) — baseline tehnologic și de deployment |
-| OQ-002 | Ce nivel de white-label are fiecare tenant și cum se rezolvă tenantul? | Architecture | Solution architect | Resolved | [Decizie OQ-002 — subdomeniu per primărie, o singură aplicație](#decizie-oq-002--subdomeniu-per-primărie-o-singură-aplicație). Modelul complet se specifică în FUP-1. |
+| OQ-002 | Ce nivel de white-label are fiecare tenant și cum se rezolvă tenantul? | Architecture | Solution architect | Resolved | [Decizie OQ-002 — subdomeniu per primărie, o singură aplicație](#decizie-oq-002--subdomeniu-per-primărie-o-singură-aplicație). Modelul complet: [ADR-0002](../decisions/ADR-0002-tenancy-model-and-tenant-resolution.md) (FUP-1). |
 | OQ-003 | Ce reguli de registratură trebuie să suporte prima primărie pilot? | Domain | Municipality representative | Open | Domain validation |
 | OQ-004 | Cum ajunge conținutul public dinamic (anunțurile) pe site-ul static? | Architecture | Solution architect | Resolved | [Decizie OQ-004 — anunțurile se încarcă la runtime, nu la build](#decizie-oq-004--anunțurile-se-încarcă-la-runtime-nu-la-build). Mecanismul complet se specifică în FUP-8. |
+| OQ-005 | Unde se aplică efectiv rate limiting-ul per tenant și **cum se identifică tenantul înainte de autentificare**? | Architecture | Solution architect | Open | FUP-13 — vezi „Acțiuni ulterioare" în [ADR-0002](../decisions/ADR-0002-tenancy-model-and-tenant-resolution.md). Blocant pentru expunerea publică a înregistrării: un flood de SMS este un atac financiar direct, iar la înregistrare **nu există încă JWT**. |
+| OQ-006 | Ce furnizor de SMS folosim și care este costul unitar real? | Architecture | Product owner + Solution architect | Open | Neales în [ADR-0002](../decisions/ADR-0002-tenancy-model-and-tenant-resolution.md). FUP-4. Costul se refacturează per primărie, deci consumul trebuie contorizat per tenant. |
+| OQ-007 | Care sunt perioadele de retenție pentru datele personale, documentele încărcate și log-uri? | Legal/Privacy | Product owner + specialist privacy/juridic | Open | **Nestabilite. Nu se inventează** (`.claude/rules/security.md`). FUP-6. |
+| OQ-008 | Cum se restaurează selectiv datele unui singur tenant? | Architecture | Solution architect | Open | Procedura **nu există și nu este testată**. Consecință asumată a schemei partajate — vezi „Consecințe negative" în [ADR-0002](../decisions/ADR-0002-tenancy-model-and-tenant-resolution.md). FUP-12. |
+| OQ-009 | Există cerințe legale de localizare a datelor (regiunea Supabase)? | Legal | Product owner + juridic | Open | Neconfirmate. Nu formulăm o cerință legală neverificată. |
+| OQ-010 | La ce prag de „zgomot de vecin" intervenim? | Architecture | Solution architect | Open | Nedefinit. Se stabilește pe date reale, nu pe presupuneri. |
+
+Lista completă a ADR-urilor ulterioare (FUP-2 … FUP-13) este în secțiunea „Acțiuni ulterioare" din [ADR-0002](../decisions/ADR-0002-tenancy-model-and-tenant-resolution.md). Registrul **nu o repetă**.
 
 ## Decizie OQ-002 — subdomeniu per primărie, o singură aplicație
 
