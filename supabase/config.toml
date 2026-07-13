@@ -285,9 +285,13 @@ max_frequency = "5s"
 # uri = "pg-functions://postgres/auth/before-user-created-hook"
 
 # This hook runs before a token is issued and allows you to add additional claims based on the authentication method used.
-# [auth.hook.custom_access_token]
-# enabled = true
-# uri = "pg-functions://<database>/<schema>/<hook_name>"
+#
+# Scrie `tenant_id` si `app_role` in `app_metadata`, citite din `tenant_users`
+# (ADR-0002, ADR-0003). Fara acest hook, JWT-ul nu are claim-uri, deci
+# current_tenant_id() = NULL si RLS refuza totul. Hook-ul NU este optional.
+[auth.hook.custom_access_token]
+enabled = true
+uri = "pg-functions://postgres/public/custom_access_token_hook"
 
 # Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
 [auth.sms.twilio]
