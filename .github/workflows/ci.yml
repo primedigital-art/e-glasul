@@ -4,6 +4,16 @@ on:
   pull_request:
     branches: [main]
 
+  # Și pe push în main. Fără asta, `main` nu este verificat NICIODATĂ direct:
+  # porțile ar rula doar pe PR-uri, iar starea ramurii de referință ar fi doar
+  # presupusă. R-002 nu poate fi declarat mitigat pe baza unei rulări care nu a
+  # atins niciodată main.
+  #
+  # Contează și practic: un squash-merge produce un commit NOU, care nu a existat
+  # ca atare pe nicio ramură de PR. Doi PR-uri verzi separat pot da un main roșu.
+  push:
+    branches: [main]
+
 jobs:
   verify:
     name: Typecheck and build
