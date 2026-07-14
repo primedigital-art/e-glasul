@@ -1,0 +1,12 @@
+{
+  "name": "@e-glasul/db-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\""
+  },
+  "devDependencies": {
+    "pg": "^8.16.3"
+  }
+}
