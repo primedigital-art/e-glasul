@@ -294,3 +294,106 @@ test("C13 — app_role conține EXACT cele patru valori aprobate; niciun super-a
     await client.end();
   }
 });
+
+// Tabelele de istoric sunt append-only IMPUS LA NIVEL DE PRIVILEGIU, nu doar prin
+// convenție: un client nu poate fabrica sau șterge un rând de istoric prin PostgREST,
+// pentru că `authenticated` nu are nici GRANT, nici politică de INSERT/UPDATE/DELETE.
+// Singurul scriitor legitim este funcția SECURITY DEFINER (ADR-0004). Fără această poartă,
+// istoricul devine falsificabil (ADR-0004, „Opțiunea B respinsă").
+test("C14 — tabelele de istoric NU au GRANT sau politici de scriere pentru `authenticated`", async () => {
+  const HISTORY_TABLES = ["issue_status_history", "issue_assignment_history"];
+  const client = await db();
+  try {
+    const { rows: grants } = await client.query(
+      `
+      select table_name, privilege_type
+        from information_schema.role_table_grants
+       where table_schema = 'public'
+         and grantee = 'authenticated'
+         and table_name = any ($1)
+         and privilege_type in ('INSERT', 'UPDATE', 'DELETE');
+    `,
+      [HISTORY_TABLES],
+    );
+
+    assert.deepEqual(
+      grants.map((r) => `${r.table_name}:${r.privilege_type}`),
+      [],
+      "C14 ÎNCĂLCAT — istoricul are GRANT de scriere pentru `authenticated`. " +
+        "Append-only-ul trebuie impus la nivel de privilegiu, nu doar de politică.",
+    );
+
+    const { rows: policies } = await client.query(
+      `
+      select tablename, policyname, cmd
+        from pg_policies
+       where schemaname = 'public'
+         and tablename = any ($1)
+         and 'authenticated' = any (roles)
+         and cmd in ('INSERT', 'UPDATE', 'DELETE');
+    `,
+      [HISTORY_TABLES],
+    );
+
+    assert.deepEqual(
+      policies.map((r) => `${r.tablename}.${r.policyname} (${r.cmd})`),
+      [],
+      "C14 ÎNCĂLCAT — istoricul are politică de scriere pentru `authenticated`. " +
+        "Scrierea trece EXCLUSIV prin funcția SECURITY DEFINER (ADR-0004).",
+    );
+  } finally {
+    await client.end();
+  }
+});
+
+// C15 este pentru funcțiile SECURITY DEFINER ce a fost C1 pentru tabele: transformă
+// „am uitat `set search_path` / `revoke execute`" dintr-o breșă tăcută într-un build roșu,
+// pentru fiecare funcție definer VIITOARE, nu doar pentru cele două de acum. La SECURITY
+// DEFINER, un search_path needeclarat este o cale de escaladare de privilegii, iar un
+// EXECUTE lăsat lui anon/PUBLIC deschide gaura oricui (ADR-0004, Decizie pct. 1–2, 4).
+test("C15 — orice funcție SECURITY DEFINER din public are search_path fixat și niciun EXECUTE pentru anon/PUBLIC", async () => {
+  const client = await db();
+  try {
+    const { rows } = await client.query(`
+      select p.proname as functie,
+             exists (
+               select 1
+                 from unnest(coalesce(p.proconfig, array[]::text[])) cfg
+                where cfg like 'search_path=%'
+             ) as has_search_path,
+             coalesce((
+               select bool_or(a.grantee = 0 or r.rolname = 'anon')
+                 from aclexplode(p.proacl) a
+                 left join pg_roles r on r.oid = a.grantee
+                where a.privilege_type = 'EXECUTE'
+             ), false) as anon_or_public_can_execute
+        from pg_proc p
+        join pg_namespace n on n.oid = p.pronamespace
+       where n.nspname = 'public'
+         and p.prosecdef = true
+       order by p.proname;
+    `);
+
+    const fara_search_path = rows
+      .filter((r) => !r.has_search_path)
+      .map((r) => r.functie);
+    assert.deepEqual(
+      fara_search_path,
+      [],
+      `C15 ÎNCĂLCAT — funcție SECURITY DEFINER fără search_path fixat: ${fara_search_path.join(", ")}.\n` +
+        `La definer, search_path needeclarat este cale de escaladare de privilegii (ADR-0004).`,
+    );
+
+    const executabile_de_anon = rows
+      .filter((r) => r.anon_or_public_can_execute)
+      .map((r) => r.functie);
+    assert.deepEqual(
+      executabile_de_anon,
+      [],
+      `C15 ÎNCĂLCAT — funcție SECURITY DEFINER executabilă de anon/PUBLIC: ${executabile_de_anon.join(", ")}.\n` +
+        `PostgreSQL acordă EXECUTE lui PUBLIC implicit; trebuie revocat (ADR-0004, Decizie pct. 4).`,
+    );
+  } finally {
+    await client.end();
+  }
+});
