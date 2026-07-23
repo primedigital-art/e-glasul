@@ -1,7 +1,7 @@
 ---
 id: TASK-0007
 title: Normalizează line endings la LF și fă scripturile independente de checkout
-status: review
+status: done
 blocked_by: []
 refs: []
 owner: agent
@@ -39,3 +39,4 @@ Două soluții complementare pentru bug-ul „`pnpm tasks` iese gol pe un checko
 - list-tasks.mjs: frontmatter regex tolerant la `\r?\n`.
 - check-migrations.mjs: matching-ul era deja CRLF-safe; adăugat normalizare CRLF→LF la
   citire ca belt-and-suspenders, ca să fie provabil independent de checkout.
+- PR #30 — merged. Status review → done.
