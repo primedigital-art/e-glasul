@@ -134,3 +134,9 @@ A planning artifact is complete only when it contains:
 - risks
 - open questions
 - owner or next action for unresolved items
+
+## Autonomous work
+
+Autonomous or semi-autonomous work follows `.claude/rules/autonomy.md` without exception.
+Work items live in `docs/tasks/` (see `docs/tasks/README.md`). The agent only picks tasks
+with status `ready`. Open questions are resolved by the human, never by the agent.
