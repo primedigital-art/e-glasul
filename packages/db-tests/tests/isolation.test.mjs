@@ -9,9 +9,9 @@
 // afectate), NU 403. Doar violarea lui WITH CHECK ridică 403/42501. Ambele sunt
 // blocaje reale — dar aplicația nu are voie să citească 200 ca „a mers".
 
-import { test, before } from "node:test";
 import assert from "node:assert/strict";
-import { seed, login, rest, restAnon, db } from "../src/harness.mjs";
+import { before, test } from "node:test";
+import { db, login, rest, restAnon, seed } from "../src/harness.mjs";
 
 let ids;
 const tok = {};
@@ -47,7 +47,11 @@ function assertScrieBlocata(res, mesaj) {
 // ---------------------------------------------------------------------------
 
 test("T1 — citizen A își vede DOAR propriul rând", async () => {
-  const r = await rest("GET", "tenant_users?select=user_id,role", tok.a_citizen);
+  const r = await rest(
+    "GET",
+    "tenant_users?select=user_id,role",
+    tok.a_citizen,
+  );
   assert.equal(r.status, 200);
   assert.equal(r.body.length, 1);
   assert.equal(r.body[0].user_id, ids["a_citizen@test.ro"]);
@@ -80,7 +84,11 @@ test("T5 — citizen A vede DOAR tenantul A", async () => {
 });
 
 test("T6 — citizen A cere EXPLICIT tenantul B: zero rânduri", async () => {
-  const r = await rest("GET", `tenants?id=eq.${ids.suceava}&select=slug`, tok.a_citizen);
+  const r = await rest(
+    "GET",
+    `tenants?id=eq.${ids.suceava}&select=slug`,
+    tok.a_citizen,
+  );
   assert.deepEqual(r.body, []);
 });
 
@@ -95,7 +103,10 @@ test("T7 — citizen A NU își poate acorda singur rolul tenant_admin", async (
     tok.a_citizen,
     { role: "tenant_admin" },
   );
-  assertScrieBlocata(r, "T7: un cetățean și-a acordat singur rol de administrator!");
+  assertScrieBlocata(
+    r,
+    "T7: un cetățean și-a acordat singur rol de administrator!",
+  );
 
   const client = await db();
   const { rows } = await client.query(
@@ -103,7 +114,11 @@ test("T7 — citizen A NU își poate acorda singur rolul tenant_admin", async (
     [ids["a_citizen@test.ro"]],
   );
   await client.end();
-  assert.equal(rows[0].role, "citizen", "T7: rolul s-a schimbat efectiv în bază!");
+  assert.equal(
+    rows[0].role,
+    "citizen",
+    "T7: rolul s-a schimbat efectiv în bază!",
+  );
 });
 
 test("T8 — tenant_admin A NU își poate schimba propriul rol", async () => {
@@ -137,7 +152,10 @@ test("T9 — tenant_admin A NU poate schimba rolul unui utilizator al lui B", as
     tok.a_admin,
     { role: "tenant_admin" },
   );
-  assertScrieBlocata(r, "T9: admin al lui A a modificat un utilizator al lui B!");
+  assertScrieBlocata(
+    r,
+    "T9: admin al lui A a modificat un utilizator al lui B!",
+  );
 });
 
 test("T10 — MUTAREA RÂNDULUI: admin A nu poate seta tenant_id = B (WITH CHECK)", async () => {
@@ -158,7 +176,11 @@ test("T10 — MUTAREA RÂNDULUI: admin A nu poate seta tenant_id = B (WITH CHECK
     [ids["a_citizen@test.ro"]],
   );
   await client.end();
-  assert.equal(rows[0].tenant_id, ids.botosani, "T10: rândul chiar a traversat frontiera!");
+  assert.equal(
+    rows[0].tenant_id,
+    ids.botosani,
+    "T10: rândul chiar a traversat frontiera!",
+  );
 });
 
 test("T11 — tenant_admin A NU poate ACORDA un rol în tenantul B (INSERT cross-tenant)", async () => {
@@ -167,7 +189,10 @@ test("T11 — tenant_admin A NU poate ACORDA un rol în tenantul B (INSERT cross
     tenant_id: ids.suceava,
     role: "tenant_admin",
   });
-  assertScrieBlocata(r, "T11: admin al lui A a creat un administrator în tenantul B!");
+  assertScrieBlocata(
+    r,
+    "T11: admin al lui A a creat un administrator în tenantul B!",
+  );
 });
 
 test("T12 — tenant_admin A NU poate modifica brandingul primăriei B", async () => {
@@ -237,19 +262,38 @@ test("T19 — CONTROL POZITIV: admin A promovează legitim un citizen al lui A l
     { role: "staff" },
   );
   assert.equal(r.status, 200);
-  assert.equal(r.body.length, 1, "promovarea legitimă a eșuat — RLS e prea strict");
+  assert.equal(
+    r.body.length,
+    1,
+    "promovarea legitimă a eșuat — RLS e prea strict",
+  );
   assert.equal(r.body[0].role, "staff");
 });
 
 test("T20 — CONTROL POZITIV: claim-urile ajung în app_metadata, nu în user_metadata", async () => {
   const [, payload] = tok.a_admin.split(".");
   const claims = JSON.parse(
-    Buffer.from(payload.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString(),
+    Buffer.from(
+      payload.replace(/-/g, "+").replace(/_/g, "/"),
+      "base64",
+    ).toString(),
   );
 
   assert.equal(claims.app_metadata.app_role, "tenant_admin");
   assert.equal(claims.app_metadata.tenant_id, ids.botosani);
-  assert.equal(claims.user_metadata.app_role, undefined, "rolul a apărut în user_metadata!");
-  assert.equal(claims.user_metadata.tenant_id, undefined, "tenantul a apărut în user_metadata!");
-  assert.equal(claims.role, "authenticated", "claims.role (PostgREST) a fost suprascris!");
+  assert.equal(
+    claims.user_metadata.app_role,
+    undefined,
+    "rolul a apărut în user_metadata!",
+  );
+  assert.equal(
+    claims.user_metadata.tenant_id,
+    undefined,
+    "tenantul a apărut în user_metadata!",
+  );
+  assert.equal(
+    claims.role,
+    "authenticated",
+    "claims.role (PostgREST) a fost suprascris!",
+  );
 });

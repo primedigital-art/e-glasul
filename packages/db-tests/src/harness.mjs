@@ -46,7 +46,9 @@ export async function login(email) {
   });
   const body = await res.json();
   if (!body.access_token) {
-    throw new Error(`autentificare eșuată pentru ${email}: ${JSON.stringify(body)}`);
+    throw new Error(
+      `autentificare eșuată pentru ${email}: ${JSON.stringify(body)}`,
+    );
   }
   return body.access_token;
 }

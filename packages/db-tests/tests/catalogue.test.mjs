@@ -4,8 +4,8 @@
 // izolare dovedește că politicile de AZI sunt corecte. C1 dovedește că politicile
 // de MÂINE nu pot lipsi cu totul.
 
-import { test } from "node:test";
 import assert from "node:assert/strict";
+import { test } from "node:test";
 import { db } from "../src/harness.mjs";
 
 const APPROVED_ROLES = ["citizen", "staff", "leadership", "tenant_admin"];

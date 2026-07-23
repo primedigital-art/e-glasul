@@ -37,6 +37,9 @@ jobs:
       - name: Migration guard (static)
         run: pnpm guard:migrations
 
+      - name: Lint and format check (Biome)
+        run: pnpm lint
+
       - name: Typecheck apps/public
         run: pnpm --filter @e-glasul/public check
 
