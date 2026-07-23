@@ -97,6 +97,7 @@ export async function seed() {
   const users = [
     ["a_citizen@test.ro", "botosani", "citizen"],
     ["a_staff@test.ro", "botosani", "staff"],
+    ["a_leadership@test.ro", "botosani", "leadership"],
     ["a_admin@test.ro", "botosani", "tenant_admin"],
     ["b_citizen@test.ro", "suceava", "citizen"],
     ["b_admin@test.ro", "suceava", "tenant_admin"],
@@ -140,4 +141,99 @@ export async function seed() {
   } finally {
     await client.end();
   }
+}
+
+/**
+ * Semănarea datelor pentru testele de sesizări. Ca `postgres` (legitim — RLS nu se
+ * testează la semănare, ci la citire prin PostgREST cu cheia anon). `postgres` este
+ * superuser, deci scrie și în tabelele de istoric (fără politică INSERT) și în coloanele
+ * sensibile — exact ce un client NU poate face. Tocmai de aceea semănarea nu dovedește
+ * nimic despre izolare; aserțiunile o fac, prin cheia anon.
+ *
+ * Fiecare sesizare are un `client_submission_id` unic (idempotența nu e testată aici).
+ * Un rând de istoric este semănat pe `a_other` pentru a face T58 un test real (există un
+ * istoric pe care cetățeanul A NU trebuie să-l vadă), nu doar o listă goală tautologică.
+ */
+export async function seedIssues(ids) {
+  const client = await db();
+  const out = {};
+  try {
+    // Categorii per tenant (seed de onboarding în producție).
+    const { rows: cats } = await client.query(`
+      insert into public.issue_categories (tenant_id, code, label)
+      select t.id, 'groapa', 'Groapă' from public.tenants t
+      on conflict (tenant_id, code) do update set label = excluded.label
+      returning tenant_id, id;
+    `);
+    out.cat = {};
+    for (const c of cats) {
+      if (c.tenant_id === ids.botosani) out.cat.botosani = c.id;
+      if (c.tenant_id === ids.suceava) out.cat.suceava = c.id;
+    }
+
+    // Sesizări. Coloanele sensibile (author/tenant/status) sunt scrise EXPLICIT la semănare.
+    const issues = [
+      ["a_own", "botosani", "a_citizen@test.ro"],
+      ["a_other", "botosani", "a_staff@test.ro"],
+      ["a_flow", "botosani", "a_citizen@test.ro"],
+      ["a_stale", "botosani", "a_citizen@test.ro"],
+      ["a_forbid", "botosani", "a_citizen@test.ro"],
+      ["a_assign", "botosani", "a_citizen@test.ro"],
+      ["a_t57", "botosani", "a_citizen@test.ro"],
+      ["a_t66", "botosani", "a_citizen@test.ro"],
+      ["b_own", "suceava", "b_citizen@test.ro"],
+    ];
+
+    out.issue = {};
+    for (const [label, slug, authorEmail] of issues) {
+      const { rows } = await client.query(
+        `
+        insert into public.issues
+          (tenant_id, author_user_id, category_id, description,
+           location_lat, location_lng, client_submission_id)
+        values ($1, $2, $3, $4, 47.75, 26.67, gen_random_uuid())
+        returning id;
+      `,
+        [ids[slug], ids[authorEmail], out.cat[slug], `seed ${label}`],
+      );
+      out.issue[label] = rows[0].id;
+    }
+
+    // Un rând de istoric pe `a_other` (issue-ul lui a_staff), pentru T58.
+    await client.query(
+      `
+      insert into public.issue_status_history
+        (tenant_id, issue_id, from_status, to_status, actor_user_id, actor_role, acting_as)
+      values ($1, $2, 'received', 'in_progress', $3, 'staff', 'official');
+    `,
+      [ids.botosani, out.issue.a_other, ids["a_staff@test.ro"]],
+    );
+
+    return out;
+  } finally {
+    await client.end();
+  }
+}
+
+/** RPC PostgREST (funcție) cu cheia anon + JWT. Body = argumentele numite ale funcției. */
+export async function rpc(fn, token, args) {
+  const headers = {
+    apikey: ANON_KEY,
+    "Content-Type": "application/json",
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const res = await fetch(`${API}/rest/v1/rpc/${fn}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(args ?? {}),
+  });
+  const text = await res.text();
+  let json;
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch {
+    json = text;
+  }
+  return { status: res.status, body: json };
 }
