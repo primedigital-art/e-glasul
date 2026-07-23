@@ -1,0 +1,9 @@
+# LF is the repository truth. CI runs on Linux; force LF in the working tree on every
+# platform so a Windows checkout does not rewrite files to CRLF and silently break
+# tooling (e.g. scripts/list-tasks.mjs parsing task frontmatter).
+*.md    text eol=lf
+*.mjs   text eol=lf
+*.json  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.sql   text eol=lf
