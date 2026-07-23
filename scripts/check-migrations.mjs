@@ -5,7 +5,7 @@
 //   -- guard-approved: ADR-NNNN
 // iar ADR-ul respectiv există în docs/decisions/.
 
-import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const MIGRATIONS_DIR = "supabase/migrations";
@@ -33,31 +33,46 @@ function stripSqlComments(sql) {
 }
 
 let failures = 0;
-const files = readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith(".sql")).sort();
+const files = readdirSync(MIGRATIONS_DIR)
+  .filter((f) => f.endsWith(".sql"))
+  .sort();
 
 for (const file of files) {
   // Normalizează CRLF→LF ca verificarea să fie identică indiferent de checkout (Windows/Linux).
-  const raw = readFileSync(join(MIGRATIONS_DIR, file), "utf8").replace(/\r\n/g, "\n");
+  const raw = readFileSync(join(MIGRATIONS_DIR, file), "utf8").replace(
+    /\r\n/g,
+    "\n",
+  );
   const code = stripSqlComments(raw);
 
   const approvals = [...raw.matchAll(APPROVAL)].map((m) => m[1]);
   const missingAdrs = approvals.filter(
     (adr) =>
       !readdirSync(DECISIONS_DIR).some((d) => d.startsWith(adr + "-")) &&
-      !existsSync(join(DECISIONS_DIR, adr + ".md"))
+      !existsSync(join(DECISIONS_DIR, adr + ".md")),
   );
 
-  const hits = DANGEROUS.filter(([re]) => re.test(code)).map(([, name]) => name);
+  const hits = DANGEROUS.filter(([re]) => re.test(code)).map(
+    ([, name]) => name,
+  );
 
   if (hits.length > 0 && approvals.length === 0) {
     failures++;
-    console.error(`✗ ${file}: pattern periculos fără aprobare: ${hits.join(", ")}`);
-    console.error(`  Adaugă "-- guard-approved: ADR-NNNN" DOAR dacă există un ADR acceptat care justifică.`);
+    console.error(
+      `✗ ${file}: pattern periculos fără aprobare: ${hits.join(", ")}`,
+    );
+    console.error(
+      `  Adaugă "-- guard-approved: ADR-NNNN" DOAR dacă există un ADR acceptat care justifică.`,
+    );
   } else if (hits.length > 0 && missingAdrs.length > 0) {
     failures++;
-    console.error(`✗ ${file}: marker către ADR inexistent: ${missingAdrs.join(", ")}`);
+    console.error(
+      `✗ ${file}: marker către ADR inexistent: ${missingAdrs.join(", ")}`,
+    );
   } else if (hits.length > 0) {
-    console.log(`⚠ ${file}: pattern periculos (${hits.join(", ")}) aprobat prin ${approvals.join(", ")}`);
+    console.log(
+      `⚠ ${file}: pattern periculos (${hits.join(", ")}) aprobat prin ${approvals.join(", ")}`,
+    );
   } else {
     console.log(`✓ ${file}`);
   }
