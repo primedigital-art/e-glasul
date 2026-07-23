@@ -19,6 +19,7 @@ Acest registru păstrează întrebările care afectează mai multe funcționalit
 | OQ-013 | Se blochează tehnic auto-procesarea (un funcționar își procesează propria sesizare)? | Product | Product owner + reprezentantul primăriei | Open | Azi este **înregistrată, nu împiedicată** — vezi [R-006](./risk-register.md). Blocarea (`actor_user_id <> author_user_id` la schimbarea de status) este **decizie de produs, nu tehnică**. Nu o presupunem. |
 | OQ-014 | Câți `tenant_admin` are o primărie la onboarding și cine îi recuperează accesul? | Operations | Solution architect + Product owner | Open | Fără super-admin, un singur `tenant_admin` care pierde accesul lasă primăria fără administrator — vezi [R-007](./risk-register.md). Procedura de onboarding din [ADR-0003](../decisions/ADR-0003-authentication-and-role-model.md) nu impune încă un minim. |
 | OQ-015 | Structura primăriei pilot încape în cele patru roluri? | Domain | Product owner + reprezentantul primăriei | Open | **Neverificat.** Dacă nu încape, este dovada care declanșează reevaluarea modelului de roluri — [ADR-0003](../decisions/ADR-0003-authentication-and-role-model.md). Legat de [OQ-003](#întrebări-deschise). |
+| OQ-016 | Ce regim juridic are o sesizare: semnalare informală sau petiție formală? | Domain/Legal | Product owner | Resolved | [Decizie OQ-016 — Faza 1 livrează doar semnalări informale, nu petiții](#decizie-oq-016--faza-1-livrează-doar-semnalări-informale-nu-petiții). Deblochează **B1** din [FEAT-001](../product/features/sesizari-cetatenesti-brief.md). |
 
 Lista completă a ADR-urilor ulterioare (FUP-2 … FUP-13) este în secțiunea „Acțiuni ulterioare" din [ADR-0002](../decisions/ADR-0002-tenancy-model-and-tenant-resolution.md). Registrul **nu o repetă**.
 
@@ -86,3 +87,48 @@ Dacă indexarea anunțurilor devine o cerință, decizia se reevaluează explici
 Mecanismul complet — forma politicii RLS de citire publică, schema tabelului de anunțuri, comportamentul de cache și revalidare în browser, starea de încărcare și de eroare la citirea anunțurilor, programarea publicării, comportamentul când Supabase nu răspunde — **se specifică în FUP-8**, care nu este creat de această decizie.
 
 Politica de citire publică atinge direct izolarea între tenanți: este singurul loc din Phase 1 unde date se citesc **fără JWT**. Delimitarea pe tenant a acestei politici trebuie tratată în FUP-8 ca subiect de securitate, nu ca detaliu de implementare.
+
+## Decizie OQ-016 — Faza 1 livrează doar semnalări informale, nu petiții
+
+**Data:** 2026-07-14 — statusul și owner-ul întrebării sunt în rândul OQ-016 din tabelul de mai sus.
+
+Deblochează **B1** (blocantul principal) din [feature brief-ul FEAT-001](../product/features/sesizari-cetatenesti-brief.md).
+
+### Contextul juridic (OG 27/2002)
+
+Legea română definește **petiția** ca incluzând *cererea, reclamația, **sesizarea** sau propunerea* (**art. 2**). Termenul „sesizare" din limbajul curent cade, așadar, în definiția legală a petiției.
+
+Odată **înregistrată**, o petiție atrage obligații care nu sunt opționale:
+
+| Obligație | Temei |
+|---|---|
+| Termen de răspuns de **30 de zile** | art. 8 |
+| Prelungire cu **15 zile**, cu înștiințare | art. 9 |
+| Răspuns **semnat formal**, cu temeiul legal | art. 13 |
+| Redirecționarea în **5 zile** a petițiilor greșit adresate | art. 6^1 |
+| **Conexarea** petițiilor duplicate | art. 10 |
+| Raportare **semestrială** | art. 14 |
+| **Răspundere disciplinară** pentru depășirea termenului | art. 15 |
+| Petițiile **anonime nu se iau în considerare** | art. 7 |
+
+### Ce s-a decis
+
+1. **Faza 1 livrează EXCLUSIV semnalări informale.** Nu sunt înregistrate în registratura primăriei, **nu au termen legal** și **nu produc răspuns formal semnat**.
+
+2. Primăria le rezolvă ca **muncă operațională**, nu ca obligație legală.
+
+3. **Regimul de petiție NU se livrează în Faza 1** și nu se adaugă fără: schimbare explicită de scop, feature brief, domain review cu o primărie reală, și ADR propriu.
+
+4. **Modelul de date nu are voie să îl excludă.** Tabelul de sesizări poartă o coloană `regim` **de la început**, cu **exact o valoare permisă în Faza 1: `'semnalare'`**. Adăugarea ulterioară a lui `'petitie'` trebuie să fie **o valoare în plus și un flux în plus** — niciodată o rescriere a tabelului sau a politicilor lui RLS.
+
+### Consecința care nu are voie să se piardă
+
+**Cerința ca cetățeanul să aibă cont (email sau telefon) NU este o preferință de produs.**
+
+**Art. 7** face petițiile anonime inadmisibile. În momentul în care regimul de petiție ar fi vreodată activat, **identitatea devine cerință legală**, nu opțiune de UX. Decizia din [ADR-0003](../decisions/ADR-0003-authentication-and-role-model.md) — un cont, email **sau** telefon — este deci compatibilă cu regimul de petiție **prin construcție**, nu din întâmplare. Nu o slăbiți fără a reciti art. 7.
+
+### Ce NU decide această intrare
+
+- **Nu stabilește dacă primăria pilot tratează de facto sesizările ca petiții.** Practica locală poate diferi de minimul legal. Rămâne de validat — vezi [OQ-003](#întrebări-deschise).
+- **Nu stabilește** ce se întâmplă dacă un cetățean cere explicit regim de petiție. Întrebare deschisă pentru domain review.
+- **Nu înlocuiește o notă de domeniu.** Articolele de mai sus sunt citate ca temei al deciziei de scop; **verificarea lor față de textul oficial în vigoare, cu dată de consultare**, este sarcina `eg-public-sector-domain-expert` (`.claude/rules/security.md`).
