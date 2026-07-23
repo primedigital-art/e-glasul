@@ -2,23 +2,23 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
-      "Bash(git status)",
-      "Bash(git diff *)",
-      "Bash(git log *)",
-      "Bash(npm run lint)",
-      "Bash(npm run typecheck)",
-      "Bash(npm run test *)",
-      "Bash(npm run build)"
+      "Bash(git status)", "Bash(git diff *)", "Bash(git log *)", "Bash(git branch *)",
+      "Bash(pnpm typecheck)", "Bash(pnpm build)", "Bash(pnpm lint)", "Bash(pnpm test)",
+      "Bash(pnpm verify)", "Bash(pnpm tasks)",
+      "Bash(pnpm test:db)", "Bash(pnpm guard:migrations)",
+      "Bash(pnpm db:start)", "Bash(pnpm db:reset)", "Bash(pnpm db:stop)",
+      "Bash(pnpm --filter *)", "Bash(pnpm install)", "Bash(pnpm exec supabase status)",
+      "Bash(git add *)", "Bash(git commit *)", "Bash(git checkout *)",
+      "Bash(git stash *)", "Bash(git push -u origin *)", "Bash(gh pr create *)",
+      "Bash(gh pr view *)", "Bash(gh api -X PUT repos/primedigital-art/e-glasul/branches/main/protection *)"
     ],
     "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)",
-      "Read(./credentials/**)",
+      "Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)", "Read(./credentials/**)",
       "Read(./supabase/.temp/**)",
-      "Bash(git push --force*)",
-      "Bash(git reset --hard*)",
-      "Bash(rm -rf *)"
+      "Bash(git push --force*)", "Bash(git reset --hard*)", "Bash(rm -rf *)",
+      "Bash(git push origin main*)", "Bash(git merge *)",
+      "Bash(pnpm exec supabase db push*)", "Bash(pnpm exec supabase link*)",
+      "Bash(pnpm exec supabase projects *)"
     ]
   }
 }
