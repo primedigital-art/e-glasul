@@ -1,7 +1,7 @@
 ---
 id: TASK-0002
 title: Adaugă Biome ca linter + formatter unic pe monorepo
-status: ready
+status: review
 blocked_by: []
 refs: []
 owner: agent
@@ -20,9 +20,16 @@ Reguli custom stricte, husky/pre-commit hooks, modificarea logicii vreunui fiși
 
 ## Definition of Done
 
-- [ ] `pnpm lint` există la rădăcină și trece
-- [ ] `pnpm verify` include lint
-- [ ] CI rulează lint-ul și e verde
-- [ ] Un singur commit `style:` cu reformatarea inițială, separat de commitul de config
+- [x] `pnpm lint` există la rădăcină și trece (`biome check .`)
+- [x] `pnpm verify` include lint (rulează primul, fail-fast)
+- [x] CI rulează lint-ul și e verde (pas „Lint and format check (Biome)" în jobul `verify`)
+- [x] Un singur commit `style:` cu reformatarea inițială, separat de commitul de config
 
 ## Note de execuție
+
+- Biome `^2.5.5`, un singur tool (fără eslint/prettier). Config: `biome.json` — recommended +
+  `organizeImports` (import sorting), format `space`/2, `lineEnding: lf` (aliniat cu `.gitattributes`).
+- `pnpm lint` = `biome check .`; `pnpm format` = `biome check --write .`.
+- Lint pur pe codul existent: 0 erori (2 info-uri non-blocante). Reformatarea inițială atinge
+  doar wrapping/format — commit `style:` separat, ca să nu polueze diff-urile viitoare.
+- Inclus în acest PR și `TASK-0005.blocked_by → [ADR-0004]` (cerut explicit).

@@ -7,3 +7,9 @@
 *.yml   text eol=lf
 *.yaml  text eol=lf
 *.sql   text eol=lf
+# Source formatted by Biome (lineEnding: lf) — keep LF so `pnpm lint` passes on any checkout.
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.jsx   text eol=lf
+*.astro text eol=lf
+*.css   text eol=lf

@@ -3,8 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@11.11.0",
-  "engines": { "node": ">=24.0.0 <25", "pnpm": ">=11 <12" },
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "pnpm": ">=11 <12"
+  },
   "scripts": {
+    "lint": "biome check .",
+    "format": "biome check --write .",
     "typecheck": "pnpm --filter @e-glasul/public check && pnpm --filter @e-glasul/app typecheck",
     "build": "pnpm --recursive build",
     "test:db": "pnpm --filter @e-glasul/db-tests test",
@@ -13,7 +18,10 @@
     "db:stop": "supabase stop",
     "guard:migrations": "node scripts/check-migrations.mjs",
     "tasks": "node scripts/list-tasks.mjs",
-    "verify": "pnpm typecheck && pnpm build && pnpm guard:migrations"
+    "verify": "pnpm lint && pnpm typecheck && pnpm build && pnpm guard:migrations"
   },
-  "devDependencies": { "supabase": "^2.109.1" }
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
+    "supabase": "^2.109.1"
+  }
 }

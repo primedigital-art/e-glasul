@@ -2,8 +2,8 @@
 id: TASK-0005
 title: Migrații + porți de izolare pentru tabelele de sesizări
 status: blocked
-blocked_by: [TASK-0004]
-refs: [FEAT-001, ADR-0002]
+blocked_by: [ADR-0004]
+refs: [FEAT-001, ADR-0002, ADR-0003, ADR-0004]
 owner: agent
 ---
 
@@ -24,3 +24,8 @@ UI. Storage de fotografii (blocat de OQ-007/B2). Orice tabel neprevăzut în spe
 - [ ] R-002 rămâne Mitigated: suprafața nouă are teste de frontieră în același PR
 
 ## Note de execuție
+
+- TASK-0004 (spec) este `done`. Blocajul real acum este **acceptarea ADR-0004** (funcțiile
+  `SECURITY DEFINER` pentru tranziții/atribuiri) — fără ea, migrația nu poate purta markerul
+  `-- guard-approved: ADR-0004` cerut de `scripts/check-migrations.mjs`. De aceea `blocked_by`
+  este `[ADR-0004]`, nu `[TASK-0004]`. Doar omul acceptă ADR-ul și mută acest task în `ready`.
