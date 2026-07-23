@@ -34,6 +34,9 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      - name: Migration guard (static)
+        run: pnpm guard:migrations
+
       - name: Typecheck apps/public
         run: pnpm --filter @e-glasul/public check
 
