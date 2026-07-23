@@ -12,7 +12,7 @@ const files = readdirSync(DIR)
 
 const tasks = files.map((f) => {
   const raw = readFileSync(join(DIR, f), "utf8");
-  const fm = raw.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "";
+  const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
   const get = (k) => fm.match(new RegExp(`^${k}:\\s*(.*)$`, "m"))?.[1]?.trim() ?? "";
   return { id: get("id"), title: get("title"), status: get("status"), blocked_by: get("blocked_by"), file: f };
 });

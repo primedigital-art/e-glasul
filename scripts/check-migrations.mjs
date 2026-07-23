@@ -36,7 +36,8 @@ let failures = 0;
 const files = readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith(".sql")).sort();
 
 for (const file of files) {
-  const raw = readFileSync(join(MIGRATIONS_DIR, file), "utf8");
+  // Normalizează CRLF→LF ca verificarea să fie identică indiferent de checkout (Windows/Linux).
+  const raw = readFileSync(join(MIGRATIONS_DIR, file), "utf8").replace(/\r\n/g, "\n");
   const code = stripSqlComments(raw);
 
   const approvals = [...raw.matchAll(APPROVAL)].map((m) => m[1]);
