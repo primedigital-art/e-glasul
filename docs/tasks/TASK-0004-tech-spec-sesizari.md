@@ -1,8 +1,8 @@
 ---
 id: TASK-0004
 title: Specificație tehnică pentru nucleul FEAT-001 (depunere, urmărire, inbox)
-status: blocked
-blocked_by: [TASK-0001]
+status: ready
+blocked_by: []
 refs: [FEAT-001, ADR-0002, ADR-0003, OQ-016]
 owner: agent
 ---
