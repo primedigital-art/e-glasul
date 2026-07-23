@@ -1,6 +1,6 @@
 # ADR-0004: Contractul funcțiilor de workflow pentru sesizări (`SECURITY DEFINER`)
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Data:** 2026-07-23
 - **Decidenți:** Product owner, Solution architect
 - **Înlocuiește:** None
