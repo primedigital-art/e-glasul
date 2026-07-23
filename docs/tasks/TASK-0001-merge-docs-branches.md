@@ -1,7 +1,7 @@
 ---
 id: TASK-0001
 title: Deschide PR-uri pentru cele două branch-uri docs nemergeate
-status: ready
+status: done
 blocked_by: []
 refs: [FEAT-001, OQ-016]
 owner: agent
@@ -19,8 +19,12 @@ Orice modificare de conținut în cele două documente. Doar PR + descriere.
 
 ## Definition of Done
 
-- [ ] Ambele PR-uri deschise, cu titlu convențional și referință la OQ-016 / FEAT-001
-- [ ] CI verde pe ambele
-- [ ] Merge-ul rămâne la om
+- [x] Ambele PR-uri deschise, cu titlu convențional și referință la OQ-016 / FEAT-001
+- [x] CI verde pe ambele
+- [x] Merge-ul rămâne la om
 
 ## Note de execuție
+
+- OQ-016: PR #25 (`docs/oq-regim-sesizari`) — merged.
+- FEAT-001: PR #24 (`docs/feature-brief-sesizari`) — merged, după #25 (ordinea cerută respectată).
+- Merge-ul a fost făcut de om; agentul doar a deschis PR-urile.
