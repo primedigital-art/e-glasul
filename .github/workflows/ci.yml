@@ -46,6 +46,9 @@ jobs:
       - name: Typecheck apps/app
         run: pnpm --filter @e-glasul/app typecheck
 
+      - name: Unit tests (Vitest)
+        run: pnpm test
+
       - name: Build both apps
         run: pnpm --recursive build
 
