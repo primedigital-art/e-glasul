@@ -309,3 +309,19 @@ T64 este cazul central al acestui ADR: dovedește că gaura din RLS nu este o ga
 - [`supabase/migrations/20260713140630_tenancy_schema.sql`](../../supabase/migrations/20260713140630_tenancy_schema.sql) — convenția `security invoker` + `set search_path = ''` pe care acest ADR o extinde la `security definer`.
 - [`scripts/check-migrations.mjs`](../../scripts/check-migrations.mjs) — poarta care cere markerul `-- guard-approved: ADR-0004`.
 - [`.claude/rules/autonomy.md`](../../.claude/rules/autonomy.md) — stop condition #3 (`SECURITY DEFINER` nou); [`.claude/rules/security.md`](../../.claude/rules/security.md), [`.claude/rules/architecture.md`](../../.claude/rules/architecture.md).
+
+## Amendamente
+
+Această secțiune consemnează abateri de **implementare** față de textul deciziei, fără a rescrie decizia. Secțiunile „Decizie" și „Plan de validare" rămân neatinse: pseudocodul lor este ilustrativ și corect ca **intenție**. Statusul ADR-ului rămâne `Accepted`.
+
+### A1 — SQLSTATE-ul refuzului de concurență: `P0001`, nu `40001` (2026-07-24)
+
+- **Sursa abaterii:** [TASK-0005](../tasks/TASK-0005-implement-sesizari-db.md) (secțiunea „Note de execuție", bullet „Abatere de contract"); implementarea în [`supabase/migrations/20260723120000_sesizari_schema.sql`](../../supabase/migrations/20260723120000_sesizari_schema.sql), funcția `change_issue_status`, pasul 3 „Concurență".
+
+- **Ce spune decizia (rămâne valabil ca intenție).** Pseudocodul ilustrativ din §Decizie pct. 7 și cazul de validare T55/E13 (§Plan de validare) folosesc `errcode = '40001'` (`serialization_failure`) pentru refuzul de concurență când `v_current <> p_expected_status`. Intenția — un **refuz determinist și instantaneu** de conflict, distinct de celelalte clase de eroare — rămâne exact cea din D6/E13.
+
+- **Ce face implementarea reală.** Refuzul de concurență folosește `errcode = 'P0001'` (`raise_exception` generic), **nu** `40001`. Restul contractului de concurență este neschimbat: `SELECT ... FOR UPDATE` în tenantul apelantului + parametrul `p_expected_status` rămân exact cele din decizie. S-a schimbat **doar** SQLSTATE-ul prin care se semnalează refuzul.
+
+- **Motivul (de transport, nu de logică).** PostgREST reîncearcă automat erorile din clasa `40` (`serialization_failure` / `deadlock_detected`) până la timeout-ul de request (~60s → HTTP 504). Cu `40001`, refuzul determinist și instantaneu cerut de D6/E13 devine un hang de ~60s (observat empiric la T55/T66 înainte de corecție). `P0001` întoarce imediat o eroare, distinctă prin mesaj de `not-authorized` (`42501`), `not-found` (`no_data_found` / `P0002`) și `invalid-transition` (`23514`). Deviația este cerută de comportamentul stratului de transport (PostgREST), nu de logica deciziei.
+
+- **Impact asupra planului de validare.** Cazurile T55 și T66 rămân valabile ca **intenție** (refuz determinist, un singur câștigător, fără rând nou de istoric); doar `errcode`-ul așteptat de asertarea lor este `P0001` în loc de `40001`. Nicio altă garanție a ADR-ului (append-only, atomicitate proiecție↔istoric, frontiera de tenant, un singur canal de eroare clasificat) nu este afectată.
