@@ -43,6 +43,18 @@ Agentul SE OPREȘTE și raportează — nu improvizează — când:
   `pnpm db:reset && pnpm test:db`.
 - PR-ul citează ID-ul task-ului în titlu: `feat(db): ... (TASK-0007)`.
 - La final, agentul actualizează `status` în fișierul task-ului, în același PR.
+- **URL-ul de PR se confirmă, nu se presupune.** După `gh pr create`, agentul rulează
+  `gh pr view --json url,state` (sau `gh pr view <nr>`) și raportează URL-ul REAL întors de
+  GitHub. Nu se raportează niciodată un URL construit din numele branch-ului sau ghicit: un
+  link greșit trimite omul în gol, iar un „am deschis PR-ul" fără confirmare e o afirmație
+  neverificată (CLAUDE.md, pct. 10).
+- **PR-uri stivuite (stacked) doar când e strict necesar.** Regula implicită e un PR pe main,
+  independent. Se stivuiește un task peste branch-ul altuia DOAR când al doilea nu poate fi
+  scris fără codul primului (dependență dură, nu comoditate). Când se întâmplă:
+  - imediat ce baza (PR-ul din amonte) e merge-uită, se face `git rebase` pe `main` proaspăt
+    și `push --force-with-lease` — nu se lasă branch-ul stivuit să diveargă;
+  - un conflict la rebase se rezolvă îmbinând faptele, nu suprascriind (așa cum s-ar rezolva
+    orice conflict de registru: câmpul care aparține unui document nu se pierde).
 
 ## Reguli DB suplimentare (peste security.md)
 

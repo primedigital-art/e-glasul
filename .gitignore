@@ -4,6 +4,11 @@ node_modules/
 dist/
 build/
 coverage/
+*.tsbuildinfo
+.pnpm-store/
+
+# Deployment tooling (ADR-0001: Netlify)
+.netlify/
 
 # Environment and secrets
 .env
@@ -11,6 +16,11 @@ coverage/
 !.env.example
 secrets/
 credentials/
+# Key material must never reach a public repository, even by accident.
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Claude local settings and local memory
 .claude/settings.local.json

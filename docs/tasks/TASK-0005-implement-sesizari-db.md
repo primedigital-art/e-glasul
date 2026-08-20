@@ -1,7 +1,7 @@
 ---
 id: TASK-0005
 title: Migrații + porți de izolare pentru tabelele de sesizări
-status: review
+status: done
 blocked_by: []
 refs: [FEAT-001, ADR-0002, ADR-0003, ADR-0004]
 owner: agent
