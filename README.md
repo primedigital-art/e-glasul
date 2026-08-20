@@ -73,7 +73,9 @@ Running on `push` to `main` and not only on pull requests is deliberate: a squas
 
 The **migration guard** (`scripts/check-migrations.mjs`) statically rejects eight dangerous patterns in migration files — `DROP POLICY`, `ALTER POLICY`, `DROP TABLE`, `DISABLE ROW LEVEL SECURITY`, `TRUNCATE`, `SECURITY DEFINER`, `DROP FUNCTION`, and `GRANT ... TO anon`. A pattern is allowed only when the file carries a `-- guard-approved: ADR-NNNN` marker **and** that ADR actually exists in `docs/decisions/`; a marker pointing at a non-existent decision fails the build. SQL comments are stripped before matching, so discussing a pattern in a comment does not trip it. The one approved use in this repository is the `SECURITY DEFINER` pair covered by ADR-0004.
 
-Process rules are written down in [.claude/rules/](.claude/rules/): one task, one branch, one pull request; work items live in [docs/tasks/](docs/tasks/) and are picked up only when their acceptance criteria are verifiable by command; no direct commits to `main`.
+Process rules are written down in [.claude/rules/](.claude/rules/): one task, one branch, one pull request, and no direct commits to `main`. Work items live in [docs/tasks/](docs/tasks/).
+
+**AI-assisted development.** Much of this repository is written with Claude Code, operating under a written autonomy contract in [.claude/rules/autonomy.md](.claude/rules/autonomy.md). The agent picks up a task only when its acceptance criteria can be settled by running a command rather than by judgement, and it opens pull requests but never merges them. Merging, resolving open questions, and changing the status of a risk stay with a human. The constraint is the point: an agent that cannot merge cannot put an unreviewed change on `main`, and because `enforce_admins` is on, the gates above apply to its pull requests exactly as they apply to anyone else's.
 
 ## Architecture decisions
 
